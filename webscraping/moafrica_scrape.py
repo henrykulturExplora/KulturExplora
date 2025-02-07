@@ -7,6 +7,15 @@ import os
 # Initializing Chrome Driver
 driver = webdriver.Chrome()
 
+#Get current date and time
+current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+#Create file path for json data
+current_directory = os.getcwd()
+file_name = f'moafrika_safaris-{current_datetime}.json'
+file_path = os.path.join(current_directory, file_name)
+
+
 # Opening the website
 url = 'https://moafrikatours.com/search-results/?type=tours&terms=south-africa'
 driver.get(url)
@@ -44,8 +53,7 @@ for safari_card in safari_cards:
     safaris.append(safari)
 
 # Open and save data to json file
-current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
-with open(f'./moafrika/moafrika_safaris-{current_datetime}.json') as json_file:
+with open(file_path, 'w') as json_file:
     json.dump(safaris, json_file, indent=4)
 
 # if not os.path.exists(directory_path):

@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from datetime import datetime
+import json
+import os
 
 # Initializing Chrome Driver
 driver = webdriver.Chrome()
@@ -12,6 +14,9 @@ driver.implicitly_wait(5)
 
 #Get Results Cards
 safari_cards = driver.find_elements(By.XPATH, "//div[contains(@class, 'ts-preview')]")
+
+# Array of Safaris
+safaris = []
 
 # Loop through available cards
 for safari_card in safari_cards:
@@ -37,3 +42,12 @@ for safari_card in safari_cards:
     }
     
     print(safari)
+
+# Open and save data to json file
+directory_path = "./moafrika"
+
+# if not os.path.exists(directory_path):
+#     os.makedirs(directory_path)
+
+# current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+# json_file_path = os.path.join(directory_path, f'moafrika_safaris-{current_datetime}.json')

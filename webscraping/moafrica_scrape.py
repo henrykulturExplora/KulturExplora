@@ -34,6 +34,8 @@ for safari_card in safari_cards:
     duration = safari_card.find_element(By.XPATH, ".//span[contains(@class, 'elementor-icon-list-text')]").text
     siteUrl = safari_card.find_element(By.XPATH, ".//a[contains(@class, 'elementor-button-link')]").get_attribute("href")
     
+    
+    
     # Get current date and time
     current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
     
@@ -42,8 +44,8 @@ for safari_card in safari_cards:
         "location": "Loading...",
         "country": "South Africa",
         "currency": "ZAR",
-        "price": price,
-        "durationInDays": duration,
+        "price": price.split()[1],
+        "durationInDays": duration.split()[0],
         "imagesURl": "Loading...",
         "siteUrl": siteUrl,
         "rating": "loading",
@@ -55,9 +57,3 @@ for safari_card in safari_cards:
 # Open and save data to json file
 with open(file_path, 'w') as json_file:
     json.dump(safaris, json_file, indent=4)
-
-# if not os.path.exists(directory_path):
-#     os.makedirs(directory_path)
-
-# current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
-# json_file_path = os.path.join(directory_path, f'moafrika_safaris-{current_datetime}.json')

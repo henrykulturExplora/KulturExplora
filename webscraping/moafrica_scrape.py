@@ -41,10 +41,12 @@ for safari_card in safari_cards:
         "dateOfScrape": current_datetime
     }
     
-    print(safari)
+    safaris.append(safari)
 
 # Open and save data to json file
-directory_path = "./moafrika"
+current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+with open(f'./moafrika/moafrika_safaris-{current_datetime}.json') as json_file:
+    json.dump(safaris, json_file, indent=4)
 
 # if not os.path.exists(directory_path):
 #     os.makedirs(directory_path)

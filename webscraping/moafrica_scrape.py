@@ -4,6 +4,9 @@ from datetime import datetime
 import json
 import os
 import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import ElementClickInterceptedException, NoSuchElementException, ElementNotInteractableException
 
 # Initializing Chrome Driver
 driver = webdriver.Chrome()
@@ -20,19 +23,38 @@ file_path = os.path.join(current_directory, file_name)
 # Opening the website
 url = 'https://moafrikatours.com/search-results/?type=tours&terms=south-africa'
 driver.get(url)
-driver.implicitly_wait(5)
+time.sleep(5)
 
 # Store the original tab
 original_tab = driver.current_window_handle
 
-# Load More Results
-# load_more_btn = driver.find_element(By.XPATH, "//div[contains(@class, ts-load-more)]")
+i = 0
+# While load more button exists, click on it
+while True:
+    try:
+        # Find load more button and wait for it to be clickable
+        time.sleep(5)
+        load_more_btn = driver.find_element(By.XPATH, "//a[contains(@class, 'ts-load-more')]")
+        
+        # Scroll to load more and click on it
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", load_more_btn)
+        time.sleep(5)
+        load_more_btn.click()
+        i+=1
+        print(i)
+    
+    except NoSuchElementException:
+        print("All results have been loaded")
+        break
+    except ElementNotInteractableException:
+        print("All results have been loaded")
+        break
+    except ElementClickInterceptedException:
+        print("Element is taking a bit longer to be clickable")
+        time.sleep(8)
+        continue
 
-# i = 0
-# while i < 5:
-#     driver.implicitly_wait(20)
-#     load_more_btn.click()
-
+time.sleep(5)
 #Get Results Cards
 safari_cards = driver.find_elements(By.XPATH, "//div[contains(@class, 'ts-preview')]")
 
@@ -61,9 +83,9 @@ for safari_card in safari_cards:
     location = driver.find_element(By.XPATH, "//span[contains(@class, 'elementor-icon-list-text')]").text
     description = driver.find_element(By.XPATH, "//div[contains(@class, 'elementor-element-cdd5178')]//p[2]").text
     
+    #Get list of the image urls
     img_urls = driver.find_elements(By.XPATH, "//div[contains(@class, 'ts-gallery-grid')]//img")
     image_list = [img.get_attribute('src') for img in img_urls]
-    print(image_list)
     #Close safari site tab
     driver.close()
     
@@ -71,14 +93,14 @@ for safari_card in safari_cards:
     driver.switch_to.window(tabs[0]) 
     
     safari = {
-        "title": title,
-        "description": description,
-        "location": location,
+        "title": title || "",
+        "description": description || "",
+        "location": location || "",
         "country": "South Africa",
         "currency": "ZAR",
-        "price": price.split()[1],
-        "durationInDays": duration.split()[0],
-        "imagesURl": image_list,
+        "price": price.split()[1] || "",
+        "durationInDays": duration.split()[0] || "",
+        "imagesURl": image_list || "",
         "siteUrl": site_url,
         "rating": "",
         "dateOfScrape": current_datetime

@@ -11,7 +11,7 @@ from selenium.common.exceptions import ElementClickInterceptedException, NoSuchE
 # Initializing Chrome Driver
 driver = webdriver.Chrome()
 
-#Get current date and time
+#Get current date and time for file name
 current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 #Create file path for json data
@@ -43,12 +43,15 @@ while True:
         i+=1
         print(i)
     
+    #If load more button is not found all results have been loaded 
     except NoSuchElementException:
         print("All results have been loaded")
         break
+    #If load more button is not clickable, all elements have been loaded
     except ElementNotInteractableException:
         print("All results have been loaded")
         break
+    # If button is taking long to be clickable, wait longer
     except ElementClickInterceptedException:
         print("Element is taking a bit longer to be clickable")
         time.sleep(8)
@@ -61,52 +64,97 @@ safari_cards = driver.find_elements(By.XPATH, "//div[contains(@class, 'ts-previe
 # Array of Safaris
 safaris = []
 
-# Loop through available cards
+#Index of each Safari
+safari_index = 0
+
+# Loop through available Safari cards
 for safari_card in safari_cards:
     title = safari_card.find_element(By.XPATH, ".//div[contains(@class, 'elementor-element-162b949c')]//h3").text
-    price = safari_card.find_element(By.XPATH, ".//div[contains(@class, 'elementor-element-3c34de30')]//h3").text
-    duration = safari_card.find_element(By.XPATH, ".//span[contains(@class, 'elementor-icon-list-text')]").text
-    site_url = safari_card.find_element(By.XPATH, ".//a[contains(@class, 'elementor-button-link')]").get_attribute("href")
     
+    #Get price, duration, site_url || return "" if not found
+    try:
+        get_price = safari_card.find_element(By.XPATH, ".//div[contains(@class, 'elementor-element-3c34de30')]//h3").text
+        price = get_price.split()[1]
+    except NoSuchElementException:
+        print(f'Price not found for: {title}')
+        price = ""
+    try:
+        get_duration = safari_card.find_element(By.XPATH, ".//span[contains(@class, 'elementor-icon-list-text')]").text
+        duration = get_duration.split()
+    except NoSuchElementException:
+        print(f'Duration not found for: {title}')
+        duration = ""
+    try:
+        site_url = safari_card.find_element(By.XPATH, ".//a[contains(@class, 'elementor-button-link')]").get_attribute("href")
+    except NoSuchElementException:
+        print(f'Site Url not found for: {title}')
+        site_url = ""
     
     
     # Get current date and time
     current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
     
-    #Open the safari site to get description, location and images
-    driver.execute_script(f"window.open('{site_url}', '_blank');")
+    #Open the safari site or skip if url doesn't exist
+    try:
+        driver.execute_script(f"window.open('{site_url}', '_blank');")
+    except NoSuchElementException:
+        print(f'Site Url not found for: {title}, skipping')
+        continue
+    
     time.sleep(5)
     tabs = driver.window_handles
     
     #Switch to the safari site tab to get description, location and images
     driver.switch_to.window(tabs[-1])
-    location = driver.find_element(By.XPATH, "//span[contains(@class, 'elementor-icon-list-text')]").text
-    description = driver.find_element(By.XPATH, "//div[contains(@class, 'elementor-element-cdd5178')]//p[2]").text
     
-    #Get list of the image urls
-    img_urls = driver.find_elements(By.XPATH, "//div[contains(@class, 'ts-gallery-grid')]//img")
-    image_list = [img.get_attribute('src') for img in img_urls]
+    #Get location, description, image_urls || return "" if not found
+    try:
+        location = driver.find_element(By.XPATH, "//span[contains(@class, 'elementor-icon-list-text')]").text
+    except NoSuchElementException:
+        print(f'Location not found for: {title}')
+        location = ""
+    try:
+        description = driver.find_element(By.XPATH, "//div[contains(@class, 'elementor-element-cdd5178')]//p[2]").text
+    except NoSuchElementException:
+        print(f'Description not found for: {title}')
+        description = ""
+    
+    try:
+        #Get list of the image urls
+        img_urls = driver.find_elements(By.XPATH, "//div[contains(@class, 'ts-gallery-grid')]//img")
+        image_list = [img.get_attribute('src') for img in img_urls]
+    except NoSuchElementException:
+        print(f'Image Urls not found for: {title}')
+        image_list = []
+    
     #Close safari site tab
     driver.close()
     
-    # Switch back to current tab
-    driver.switch_to.window(tabs[0]) 
+    # Switch back to first tab
+    driver.switch_to.window(tabs[0])
+    print(f'title: {title}, index: {safari_index + 1}')
     
+    # Safari json data  structure
     safari = {
-        "title": title || "",
-        "description": description || "",
-        "location": location || "",
+        "index": safari_index,
+        "title": title,
+        "description": description,
+        "location": location,
         "country": "South Africa",
         "currency": "ZAR",
-        "price": price.split()[1] || "",
-        "durationInDays": duration.split()[0] || "",
-        "imagesURl": image_list || "",
+        "price": price,
+        "durationInDays": duration,
+        "imagesURl": image_list,
         "siteUrl": site_url,
         "rating": "",
         "dateOfScrape": current_datetime
     }
     
+    # Append to safari list
     safaris.append(safari)
+    
+    # Increment Safari Index
+    safari_index += 1
 
 # Open and save data to json file
 with open(file_path, 'w') as json_file:

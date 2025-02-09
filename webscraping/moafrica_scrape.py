@@ -80,7 +80,7 @@ for safari_card in safari_cards:
         price = ""
     try:
         get_duration = safari_card.find_element(By.XPATH, ".//span[contains(@class, 'elementor-icon-list-text')]").text
-        duration = get_duration.split()
+        duration = get_duration.split()[0]
     except NoSuchElementException:
         print(f'Duration not found for: {title}')
         duration = ""

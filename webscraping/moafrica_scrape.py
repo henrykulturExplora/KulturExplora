@@ -33,7 +33,7 @@ time.sleep(5)
 # Store the original tab
 original_tab = driver.current_window_handle
 
-i = 0
+numOfPagesLoaded = 0
 # While load more button exists, click on it
 while True:
     try:
@@ -45,8 +45,8 @@ while True:
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", load_more_btn)
         time.sleep(5)
         load_more_btn.click()
-        i+=1
-        print(i)
+        numOfPagesLoaded+=1
+        print(f'{numOfPagesLoaded} Pages loaded')
     
     #If load more button is not found all results have been loaded 
     except NoSuchElementException:
@@ -164,7 +164,7 @@ for safari_card in safari_cards:
 # Open and save data to a json file
 with open(json_file_path, 'w') as json_file:
     json.dump(safaris, json_file, indent=4)
-
+    print("JSON file saved successfully")
 
 # Open and save data to a CSV file
 with open(csv_file_path, 'w', newline='') as csv_file:
@@ -175,4 +175,5 @@ with open(csv_file_path, 'w', newline='') as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     writer.writeheader()
     writer.writerows(safaris)
+    print("CSV file saved successfully")
     

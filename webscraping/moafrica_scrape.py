@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from datetime import datetime
 import json
+import csv
 import os
 import time
 from selenium.webdriver.support.ui import WebDriverWait
@@ -11,14 +12,18 @@ from selenium.common.exceptions import ElementClickInterceptedException, NoSuchE
 # Initializing Chrome Driver
 driver = webdriver.Chrome()
 
-#Get current date and time for file name
-current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-#Create file path for json data
+# Get the current working directory
 current_directory = os.getcwd()
-file_name = f'moafrika_safaris-{current_datetime}.json'
-file_path = os.path.join(current_directory, file_name)
 
+# Define the country and filename
+country = "south-africa"
+current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+json-file_name = f'moafrika_safaris-{current_datetime}.json'
+csv-file_name = f'moafrika_safaris-{current_datetime}.csv'
+
+# Construct the file path
+json_file_path = os.path.join(current_directory, 'safaris', country, json-file_name)
+csv_file_path = os.path.join(current_directory, 'safaris', country, csv-file_name)
 
 # Opening the website
 url = 'https://moafrikatours.com/search-results/?type=tours&terms=south-africa'
@@ -156,6 +161,18 @@ for safari_card in safari_cards:
     # Increment Safari Index
     safari_index += 1
 
-# Open and save data to json file
-with open(file_path, 'w') as json_file:
+# Open and save data to a json file
+with open(json_file_path, 'w') as json_file:
     json.dump(safaris, json_file, indent=4)
+
+
+# Open and save data to a CSV file
+with open(csv_file_path, 'w', newline='') as csv_file:
+    fieldnames = ['index', 'title', 'description',
+                  'location', 'country','currency',
+                  'price', 'durationInDays', 'imagesUrl',
+                  'siteUrl', 'rating', 'dateOfScrape']
+    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(safaris)
+    

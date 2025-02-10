@@ -149,8 +149,8 @@ for safari_card in safari_cards:
         "currency": "ZAR",
         "price": price,
         "durationInDays": duration,
-        "imagesURl": image_list,
-        "siteUrl": site_url,
+        "imagesURL": image_list,
+        "siteURL": site_url,
         "rating": "",
         "dateOfScrape": current_datetime
     }
@@ -170,8 +170,8 @@ with open(json_file_path, 'w') as json_file:
 with open(csv_file_path, 'w', newline='') as csv_file:
     fieldnames = ['index', 'title', 'description',
                   'location', 'country','currency',
-                  'price', 'durationInDays', 'imagesUrl',
-                  'siteUrl', 'rating', 'dateOfScrape']
+                  'price', 'durationInDays', 'imagesURL',
+                  'siteURL', 'rating', 'dateOfScrape']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     writer.writeheader()
     writer.writerows(safaris)

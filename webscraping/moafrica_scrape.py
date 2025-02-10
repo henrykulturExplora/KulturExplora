@@ -15,15 +15,15 @@ driver = webdriver.Chrome()
 # Get the current working directory
 current_directory = os.getcwd()
 
-# Define the country and filename
+# Define the country and JSON & CSV filenames
 country = "south-africa"
 current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
-json-file_name = f'moafrika_safaris-{current_datetime}.json'
-csv-file_name = f'moafrika_safaris-{current_datetime}.csv'
+json_file_name = f'moafrika_safaris-{current_datetime}.json'
+csv_file_name = f'moafrika_safaris-{current_datetime}.csv'
 
-# Construct the file path
-json_file_path = os.path.join(current_directory, 'safaris', country, json-file_name)
-csv_file_path = os.path.join(current_directory, 'safaris', country, csv-file_name)
+# Construct the JSON & CSV file paths
+json_file_path = os.path.join(current_directory, 'safaris', country, json_file_name)
+csv_file_path = os.path.join(current_directory, 'safaris', country, csv_file_name)
 
 # Opening the website
 url = 'https://moafrikatours.com/search-results/?type=tours&terms=south-africa'

@@ -55,12 +55,6 @@ const Navbar = () => {
           {/* <h1>KulturExplora Landing page is coming soon...</h1> */}
         </div>
       </nav>
-      <div className='container' style={{ height: '2000px' }}>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente sit
-        rem, consequuntur voluptate minus consectetur tempore saepe delectus
-        cumque quam laudantium laboriosam dolor sunt odio asperiores iste optio
-        cupiditate nesciunt.
-      </div>
     </>
   );
 };

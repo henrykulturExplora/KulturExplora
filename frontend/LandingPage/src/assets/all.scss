@@ -1,7 +1,6 @@
 @import 'bootstrap/scss/functions';
-
-@import 'variables';
-
-@import 'bootstrap/scss/bootstrap';
-
+@import 'variables'; //custom variables
+@import 'bootstrap/scss/bootstrap'; // Bootstrap core style
+@import 'reset';
+@import 'base';
 @import 'loading';

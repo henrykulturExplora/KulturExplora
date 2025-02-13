@@ -4,15 +4,16 @@ const express_1 = require("express");
 const client_1 = require("@prisma/client");
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
+
 router.get("/users", async (req, res) => {
     try {
         const users = await prisma.user.findMany();
         res.json(users);
-    }
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ error: "Failed to fetch users" });
     }
 });
+
 router.post("/users", async (req, res) => {
     try {
         const { name, email } = req.body;
@@ -24,8 +25,7 @@ router.post("/users", async (req, res) => {
             data: { name, email },
         });
         res.status(201).json(newUser);
-    }
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ error: "Failed to create user" });
     }
 });

@@ -1,10 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL as string;
-const supabaseKey = process.env.SUPABASE_KEY as string; // Fix this
+const supabaseKey = process.env.SUPABASE_KEY as string;
 
-console.log("supabaseUrl: ", supabaseUrl);
-console.log("supabaseKey: ", supabaseKey);
+console.log(" Supabase Client Initialized:");
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+    global: { headers: { "X-Debug": "true" } },
+});

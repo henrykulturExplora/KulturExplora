@@ -1,36 +1,55 @@
 import { Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { User } from "../types/types";
+import { UserService } from "../services/user.service";
 
 const router = Router();
-const prisma = new PrismaClient();
 
+// GET Users
 router.get("/users", async (req: Request, res: Response) => {
-    try {
-        const users: User[] = await prisma.user.findMany();
-        res.json(users);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch users" });
+    const result = await UserService.getUsers();
+    if (!result.success) {
+        res.status(500).json({ error: result.error });
+        return;
     }
+    res.json(result.data);
 });
 
+// Get a single user by ID
+router.get("/users/:id", async (req: Request, res: Response) => {
+    const userId = req.params.id;
+
+    if (!userId) {
+        res.status(400).json({ error: "User ID is required" });
+        return;
+    }
+
+    const result = await UserService.getUserById(userId);
+    if (!result.success) {
+        res.status(404).json({ error: result.error });
+        return;
+    }
+
+    res.json(result.data);
+});
+
+// POST Create User
 router.post("/users", async (req: Request, res: Response) => {
-    try {
-        const { name, email } = req.body;
-        if (!name || !email) {
-            res.status(400).json({ error: "Name and email are required" });
-            return;
-        }
+    const { name, email } = req.body;
 
-        const newUser: User = await prisma.user.create({
-            data: { name, email },
-        });
-
-        res.status(201).json(newUser);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to create user" });
+    if (!name || !email) {
+        res.status(400).json({ error: "Username or email missing" });
+        return;
     }
+
+    const result = await UserService.createUser(name, email);
+    if (!result.success) {
+        res.status(500).json({ error: result.error });
+        return;
+    }
+
+    res.status(201).json({
+        message: "User created successfully",
+        user: result.data,
+    });
 });
 
-const userRoutes = router;
-export default userRoutes;
+export default router;

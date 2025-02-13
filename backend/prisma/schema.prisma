@@ -6,15 +6,25 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
+  id    String   @id @default(uuid())
   name  String
   email String @unique
+  role  Role   @default(USER)
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
 }

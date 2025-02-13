@@ -7,7 +7,7 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "nodemon src/server.ts",
+        "dev": "nodemon --exec ts-node src/server.ts",
         "build": "tsc",
         "start": "node dist/server.js"
     },
@@ -26,11 +26,12 @@
     "devDependencies": {
         "@types/cors": "^2.8.17",
         "@types/express": "^5.0.0",
-        "@types/node": "^22.12.0",
+        "@types/node": "^22.13.2",
         "nodemon": "^3.1.9",
         "prisma": "^6.3.1",
         "ts-node": "^10.9.2",
         "typescript": "^5.7.3"
     },
-    "name": "backend"
+    "name": "backend",
+    "type": "commonjs"
 }

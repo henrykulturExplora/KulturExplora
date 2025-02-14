@@ -1,12 +1,10 @@
 import { prisma } from "../db/prisma";
+import { Prisma } from "@prisma/client";
 
 export const UserService = {
     async createUser(name: string, email: string) {
         try {
-            console.log("[UserService] Creating user with:", {
-                name,
-                email,
-            });
+            console.log("[UserService] Creating user with:", { name, email });
 
             const user = await prisma.user.create({
                 data: { name, email },
@@ -14,12 +12,18 @@ export const UserService = {
 
             console.log("[UserService] User created:", user);
             return { success: true, data: user };
-        } catch (error: any) {
-            console.error("[UserService] Error creating user:", error.message);
-            return {
-                success: false,
-                error: error.message || "An unexpected error occurred",
-            };
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === "P2002") {
+                    console.error("[UserService] Error: Email already exists.");
+                    return { success: false, error: "Email already exists." };
+                }
+            }
+            console.error(
+                "[UserService] Unexpected error creating user:",
+                error
+            );
+            return { success: false, error: "An unexpected error occurred." };
         }
     },
 
@@ -30,12 +34,19 @@ export const UserService = {
             console.log("[UserService] Retrieved users:", users);
 
             return { success: true, data: users };
-        } catch (error: any) {
-            console.error("[UserService] Error fetching users:", error.message);
-            return {
-                success: false,
-                error: error.message || "Error retrieving user data",
-            };
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                console.error(
+                    "[UserService] Prisma error fetching users:",
+                    error.message
+                );
+                return { success: false, error: error.message };
+            }
+            console.error(
+                "[UserService] Unexpected error fetching users:",
+                error
+            );
+            return { success: false, error: "Error retrieving user data." };
         }
     },
 
@@ -48,20 +59,25 @@ export const UserService = {
             });
 
             if (!user) {
-                console.error(
-                    `[UserService] User not found with ID: ${userId}`
-                );
-                return { success: false, error: "User not found" };
+                console.warn(`[UserService] User not found with ID: ${userId}`);
+                return { success: false, error: "User not found." };
             }
 
             console.log("[UserService] Retrieved user:", user);
             return { success: true, data: user };
-        } catch (error: any) {
-            console.error("[UserService] Error fetching user:", error.message);
-            return {
-                success: false,
-                error: error.message || "Error retrieving user data",
-            };
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                console.error(
+                    "[UserService] Prisma error fetching user:",
+                    error.message
+                );
+                return { success: false, error: error.message };
+            }
+            console.error(
+                "[UserService] Unexpected error fetching user:",
+                error
+            );
+            return { success: false, error: "Error retrieving user data." };
         }
     },
 };

@@ -2,8 +2,6 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import userRoutes from "./routes/user.routes";
-import { supabase } from "./config/supabase";
-import { prisma } from "./db/prisma";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,7 +19,6 @@ app.use(cors());
 app.get("/", (req, res) => {
     res.send("Hello, world!");
 });
-
 app.use("/api", userRoutes);
 
 app.listen(port, () => {

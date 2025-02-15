@@ -1,83 +1,57 @@
 import { prisma } from "../db/prisma";
-import { Prisma } from "@prisma/client";
+import { ServiceResponse } from "../types/types";
+import { handlePrismaRequestError } from "../utils/errorHandler";
+import logger from "../utils/logger";
 
 export const UserService = {
-    async createUser(name: string, email: string) {
+    async createUser(
+        name: string,
+        email: string
+    ): Promise<ServiceResponse<{ id: string; name: string; email: string }>> {
         try {
-            console.log("[UserService] Creating user with:", { name, email });
-
             const user = await prisma.user.create({
                 data: { name, email },
             });
 
-            console.log("[UserService] User created:", user);
+            logger.success(`[UserService] User created successfully.`);
             return { success: true, data: user };
         } catch (error) {
-            if (error instanceof Prisma.PrismaClientKnownRequestError) {
-                if (error.code === "P2002") {
-                    console.error("[UserService] Error: Email already exists.");
-                    return { success: false, error: "Email already exists." };
-                }
-            }
-            console.error(
-                "[UserService] Unexpected error creating user:",
-                error
-            );
-            return { success: false, error: "An unexpected error occurred." };
+            return handlePrismaRequestError(error, "creating user");
         }
     },
 
-    async getUsers() {
+    async getUsers(): Promise<
+        ServiceResponse<{ id: string; name: string; email: string }[]>
+    > {
         try {
-            console.log("[UserService] Fetching all users...");
             const users = await prisma.user.findMany();
-            console.log("[UserService] Retrieved users:", users);
-
+            logger.success("[UserService] Fetched all users.");
             return { success: true, data: users };
         } catch (error) {
-            if (error instanceof Prisma.PrismaClientKnownRequestError) {
-                console.error(
-                    "[UserService] Prisma error fetching users:",
-                    error.message
-                );
-                return { success: false, error: error.message };
-            }
-            console.error(
-                "[UserService] Unexpected error fetching users:",
-                error
-            );
-            return { success: false, error: "Error retrieving user data." };
+            return handlePrismaRequestError(error, "fetching users");
         }
     },
 
-    async getUserById(userId: string) {
+    async getUserById(
+        userId: string
+    ): Promise<ServiceResponse<{ id: string; name: string; email: string }>> {
         try {
-            console.log(`[UserService] Fetching user by ID: ${userId}`);
-
             const user = await prisma.user.findUnique({
                 where: { id: userId },
             });
 
             if (!user) {
-                console.warn(`[UserService] User not found with ID: ${userId}`);
+                logger.error(`[UserService] User not found with ID: ${userId}`);
                 return { success: false, error: "User not found." };
             }
 
-            console.log("[UserService] Retrieved user:", user);
+            logger.success(
+                `[UserService] Retrieved user: ${user.name}, email: ${user.email}`
+            );
+
             return { success: true, data: user };
         } catch (error) {
-            if (error instanceof Prisma.PrismaClientKnownRequestError) {
-                console.error(
-                    "[UserService] Prisma error fetching user:",
-                    error.message
-                );
-                return { success: false, error: error.message };
-            }
-            console.error(
-                "[UserService] Unexpected error fetching user:",
-                error
-            );
-            return { success: false, error: "Error retrieving user data." };
+            return handlePrismaRequestError(error, "fetching user by ID");
         }
     },
 };

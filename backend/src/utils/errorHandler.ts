@@ -20,11 +20,13 @@ export const handlePrismaRequestError = (
                     `[UserService] Error: Unique constraint violated (${action})`
                 );
                 return { success: false, error: "Email already exists." };
+
             case "P2025":
                 logger.error(
                     `[UserService] Error: Record not found (${action}).`
                 );
                 return { success: false, error: "Record not found." };
+
             case "P2003":
                 logger.error(
                     `[UserService] Error: Foreign key constraint failed (${action}).`
